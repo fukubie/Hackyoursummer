@@ -25,6 +25,25 @@
             -webkit-font-smoothing: antialiased;
         }
 
+        /* Keyboard Focus Outline Optimization */
+        *:focus-visible {
+            outline: 4px solid var(--brand-blue) !important;
+            outline-offset: 4px !important;
+        }
+
+        /* Screen Reader Only Utility */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
         /* Fluid Layout Engine Container */
         .container {
             width: 100%;
@@ -135,11 +154,17 @@
             font-weight: 900;
         }
 
+        .form-fieldset {
+            border: none;
+            padding: 0;
+            margin: 0;
+        }
+
         .form-group {
             margin-bottom: 24px;
         }
 
-        .form-group label {
+        .form-group label, .group-label {
             display: block;
             font-weight: 800;
             font-size: 1rem;
@@ -162,8 +187,6 @@
 
         .form-control:focus {
             outline: none;
-            box-shadow: var(--shadow);
-            transform: translate(-2px, -2px);
         }
 
         textarea.form-control {
@@ -229,8 +252,9 @@
             margin-bottom: 16px;
             text-transform: uppercase;
         }
-        .badge-open { background: var(--brand-blue); color: #ffffff; }
-        .badge-solo { background: #e0e0e0; color: #111111; }
+        /* ACCESSIBILITY FIX: Use black text on open badges to hit contrast targets */
+        .badge-open { background: var(--accent-blue); color: var(--text-color); }
+        .badge-solo { background: #e0e0e0; color: var(--text-color); }
 
         .idea-title {
             font-size: 1.5rem;
@@ -267,6 +291,7 @@
             padding: 2px 6px;
             border-radius: 4px;
             font-family: monospace;
+            color: var(--text-color);
         }
 
         .meta-item a {
@@ -308,6 +333,7 @@
         .btn-secondary {
             background-color: #ffffff;
             margin-top: 20px;
+            color: var(--text-color);
         }
 
         /* Notifications response feedback styles */
@@ -345,72 +371,81 @@
 
             <section class="page-section">
                 
-                <div class="toggle-wrapper">
+                <div class="toggle-wrapper" role="tablist" aria-label="Directory options">
                     <div class="toggle-container">
-                        <button class="toggle-btn active" id="toggleSubmit" onclick="switchMode('submit')">Submit an Idea</button>
-                        <button class="toggle-btn" id="toggleBrowse" onclick="switchMode('browse')">Browse Directory</button>
+                        <button class="toggle-btn active" id="toggleSubmit" role="tab" aria-selected="true" aria-controls="submitPanel" onclick="switchMode('submit')">Submit an Idea</button>
+                        <button class="toggle-btn" id="toggleBrowse" role="tab" aria-selected="false" aria-controls="browsePanel" onclick="switchMode('browse')">Browse Directory</button>
                     </div>
                 </div>
 
-                <div id="submitPanel" class="view-panel active">
+                <div id="submitPanel" class="view-panel active" role="tabpanel" aria-labelledby="toggleSubmit">
                     <div class="form-card">
-                        <div class="section-header">
+                        <header class="section-header">
                             <h2>Join the Directory</h2>
                             <p>Submit your project idea and find potential summer collaborators.</p>
-                        </div>
+                        </header>
                         
                         <form id="sheetSubmissionForm">
-                            <div class="form-group">
-                                <label for="name">Name</label>
-                                <input type="text" id="name" class="form-control" placeholder="Michelle Khare" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="contact">Contact Information</label>
-                                <input type="text" id="contact" class="form-control" placeholder="michelle@challenge.com" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="projectIdea">Project Idea</label>
-                                <textarea id="projectIdea" class="form-control" placeholder="What are you building over the 4-week sprint cycle?" required></textarea>
-                            </div>
-
-                            <div class="form-group">
-                                <label>Open to Collaboration?</label>
-                                <div class="radio-group">
-                                    <label class="radio-label"><input type="radio" name="collaboration" value="Y" checked> Yes, looking for a team</label>
-                                    <label class="radio-label"><input type="radio" name="collaboration" value="N"> No, working solo</label>
+                            <fieldset class="form-fieldset">
+                                <legend class="sr-only">Project Submission Profile</legend>
+                                
+                                <div class="form-group">
+                                    <label for="name">Name</label>
+                                    <input type="text" id="name" class="form-control" placeholder="Michelle Khare" autocomplete="name" required>
                                 </div>
-                            </div>
 
-                            <div class="form-group">
-                                <label for="linkedin">LinkedIn Profile</label>
-                                <input type="url" id="linkedin" class="form-control" placeholder="https://linkedin.com/in/username">
-                            </div>
+                                <div class="form-group">
+                                    <label for="contact">Contact Information</label>
+                                    <input type="text" id="contact" class="form-control" placeholder="michelle@challenge.com" required>
+                                </div>
 
-                            <div class="form-group">
-                                <label for="needs">Project/mentor needs</label>
-                                <textarea id="needs" class="form-control" placeholder="What tech stacks, public policy guides, or hardware engineering support do you need?"></textarea>
-                            </div>
+                                <div class="form-group">
+                                    <label for="projectIdea">Project Idea</label>
+                                    <textarea id="projectIdea" class="form-control" placeholder="What are you building over the 4-week sprint cycle?" required></textarea>
+                                </div>
 
-                            <div class="form-group">
-                                <label for="discord">Discord Name</label>
-                                <input type="text" id="discord" class="form-control" placeholder="username" required>
-                            </div>
+                                <div class="form-group">
+                                    <span class="group-label" id="collab-label">Open to Collaboration?</span>
+                                    <div class="radio-group" role="radiogroup" aria-labelledby="collab-label">
+                                        <label class="radio-label">
+                                            <input type="radio" name="collaboration" value="Y" checked> Yes, looking for a team
+                                        </label>
+                                        <label class="radio-label">
+                                            <input type="radio" name="collaboration" value="N"> No, working solo
+                                        </label>
+                                    </div>
+                                </div>
 
-                            <button type="submit" id="submitBtn" class="btn-submit">Submit Details →</button>
-                            <div id="statusMessage" class="status-msg"></div>
+                                <div class="form-group">
+                                    <label for="linkedin">LinkedIn Profile</label>
+                                    <input type="url" id="linkedin" class="form-control" placeholder="https://linkedin.com/in/username">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="needs">Project/mentor needs</label>
+                                    <textarea id="needs" class="form-control" placeholder="What tech stacks, public policy guides, or hardware engineering support do you need?"></textarea>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="discord">Discord Name</label>
+                                    <input type="text" id="discord" class="form-control" placeholder="username" required>
+                                </div>
+
+                                <button type="submit" id="submitBtn" class="btn-submit">Submit Details →</button>
+                                <div id="statusMessage" class="status-msg" role="status" aria-live="polite"></div>
+                            </fieldset>
                         </form>
                     </div>
                 </div>
 
-                <div id="browsePanel" class="view-panel">
+                <div id="browsePanel" class="view-panel" role="tabpanel" aria-labelledby="toggleBrowse">
                     <div class="search-wrapper">
+                        <label for="directorySearch" class="sr-only">Search project entries directory</label>
                         <input type="text" id="directorySearch" class="form-control search-control" placeholder="🔍 Search components, developers, stack requirements...">
                     </div>
                     
-                    <div id="directoryLoading" class="loading-state">Syncing live registry database...</div>
-                    <div id="directoryEntries" class="directory-grid"></div>
+                    <div id="directoryLoading" class="loading-state" role="status" aria-live="polite">Syncing live registry database...</div>
+                    <div id="directoryEntries" class="directory-grid" aria-live="polite"></div>
                 </div>
 
             </section>
@@ -419,13 +454,11 @@
     </main>
 
     <script>
-        // Global State Tracking Variables
         let currentPage = 1;
         let currentSearch = "";
         let isFetching = false;
         let searchDebounceTimer;
         
-        // Ensure your deployment link goes here
         const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwGaa20fGaTv0mQ_ZSKRIduF150ymgvLmphCGeJghIQCMQ3EJJWdzU0jA51WT1DEuZh/exec';
 
         function switchMode(targetMode) {
@@ -436,16 +469,19 @@
 
             if (targetMode === 'submit') {
                 submitBtnElement.classList.add('active');
+                submitBtnElement.setAttribute('aria-selected', 'true');
                 browseBtnElement.classList.remove('active');
+                browseBtnElement.setAttribute('aria-selected', 'false');
                 submitPanel.classList.add('active');
                 browsePanel.classList.remove('active');
             } else {
                 browseBtnElement.classList.add('active');
+                browseBtnElement.setAttribute('aria-selected', 'true');
                 submitBtnElement.classList.remove('active');
+                submitBtnElement.setAttribute('aria-selected', 'false');
                 browsePanel.classList.add('active');
                 submitPanel.classList.remove('active');
                 
-                // Reset and trigger fresh optimized fetch
                 currentPage = 1;
                 document.getElementById('directoryEntries').innerHTML = "";
                 fetchDirectoryEntries();
@@ -462,7 +498,6 @@
             submitBtn.innerText = 'Processing Entry...';
             statusMessage.style.display = 'none';
 
-            // FORMAT: URLSearchParams structures data securely for the server-side parameter parse
             const formData = new URLSearchParams();
             formData.append('name', document.getElementById('name').value);
             formData.append('contact', document.getElementById('contact').value);
@@ -495,7 +530,6 @@
             }
         });
 
-        // Optimized Async Server-Side Pull Engine
         async function fetchDirectoryEntries(append = false) {
             if (isFetching) return;
             isFetching = true;
@@ -524,7 +558,6 @@
             }
         }
 
-        // Render DOM Fragment Engine
         function renderDirectory(records, append) {
             const container = document.getElementById('directoryEntries');
             
@@ -560,7 +593,6 @@
             }
         }
 
-        // Manage Load More Component Context
         function manageLoadMoreButton(hasMore) {
             let loadMoreBtn = document.getElementById('loadMoreBtn');
             
@@ -577,7 +609,6 @@
             loadMoreBtn.style.display = hasMore ? 'block' : 'none';
         }
 
-        // Debounced Search Listener Optimization
         document.getElementById('directorySearch').addEventListener('input', (e) => {
             clearTimeout(searchDebounceTimer);
             searchDebounceTimer = setTimeout(() => {
@@ -587,12 +618,22 @@
             }, 300);
         });
 
-        // XSS Sanitizer Helper
         function escapeHTML(str) {
             if(!str) return '';
             return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
         }
     </script>
-    <script src="https://jsdelivr.net" defer></script>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/mickidum/acc_toolbar/acctoolbar/acctoolbar.min.css">
+    <script src="https://cdn.jsdelivr.net/gh/mickidum/acc_toolbar/acctoolbar/acctoolbar.min.js"></script>
+    <script>
+        window.onload = function() {
+            // Initializes the global open-source floating widget menu layer
+            window.micAccessTool = new MicAccessTool({
+                buttonPosition: 'right', // Places the circular blue icon at the bottom right corner
+                forceLang: 'en'          // Forces the dashboard controls to render in English
+            });
+        };
+    </script>
 </body>
 </html>
