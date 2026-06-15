@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hack Your Summer - Project Hub</title>
+    <style>
+        /* Base Architecture Styling */
+        /* Neubrutalist Theme Palette Settings - Official Brand Blue Edition */
+:root {
+    --bg-color: #f6f8fa;       /* Slate off-white canvas cream */
+    --border-color: #111111;   /* Sharp solid black structural line */
+    --accent-blue: #00d2ff;    /* Electric Cyan Blue highlight */
+    --brand-blue: #0055ff;     /* Deep Civic Brand Blue */
+    --panel-bg: #ffffff;       /* Card surfaces */
+    --text-color: #111111;     /* High contrast charcoal */
+    --shadow: 5px 5px 0px #111111;
+    --active-shadow: 1px 1px 0px #111111;
+}
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #111;
+        }
+        .container {
+            width: 100%;
+            max-width: 1500px;
+            margin: 0 auto;
+            padding: 0 4vw;
+            box-sizing: border-box;
+        }
+        .page-section {
+            padding: 60px 0 90px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .white { background-color: #ffffff; }
+
+        /* Mode Switcher Toggle */
+        .toggle-container {
+            display: flex;
+            background: #e0e0e0;
+            padding: 6px;
+            border-radius: 30px;
+            margin-bottom: 40px;
+            border: 2px solid #111111;
+            box-shadow: 2px 2px 0px #111111;
+        }
+        .toggle-btn {
+            padding: 10px 24px;
+            border: none;
+            background: none;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            border-radius: 20px;
+            transition: all 0.2s ease;
+        }
+        .toggle-btn.active {
+            background: #111111;
+            color: #ffffff;
+        }
+
+        /* Views Layout Mechanics */
+        .view-panel {
+            display: none;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .view-panel.active {
+            display: block;
+        }
+
+        /* Form UI Styling Configuration */
+        .form-card {
+            background: #ffffff;
+            border: 2px solid #111111;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 4px 4px 0px #111111;
+        }
+        .section-header {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .section-header h2 {
+            font-size: 2rem;
+            margin: 0 0 10px 0;
+            font-weight: 800;
+        }
+        .form-group {
+            margin-bottom: 22px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #111111;
+            border-radius: 8px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            background-color: #fafafa;
+        }
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 5px;
+        }
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        /* Directory Search Bar Styling */
+        .search-wrapper {
+            margin-bottom: 30px;
+            position: relative;
+        }
+        .search-control {
+            width: 100%;
+            padding: 16px 20px;
+            font-size: 1.1rem;
+            border: 2px solid #111111;
+            border-radius: 30px;
+            box-shadow: 3px 3px 0px #111111;
+            box-sizing: border-box;
+        }
+
+        /* Dynamic Idea Directory Cards Grid */
+        .directory-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .idea-card {
+            background: #ffffff;
+            border: 2px solid #111111;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 3px 3px 0px #111111;
+            position: relative;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: 20px;
+            border: 1px solid #111;
+            margin-bottom: 12px;
+        }
+        .badge-open { background: #e6f4ea; color: #137333; }
+        .badge-solo { background: #f1f3f4; color: #5f6368; }
+        
+        .idea-title {
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin: 0 0 8px 0;
+        }
+        .idea-author {
+            font-size: 0.9rem;
+            color: #555;
+            margin-bottom: 16px;
+        }
+        .idea-body {
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 16px;
+            white-space: pre-wrap;
+        }
+        .meta-details {
+            border-top: 1px solid #e0e0e0;
+            padding-top: 14px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            font-size: 0.85rem;
+        }
+        .meta-item strong { font-weight: 700; }
+        .meta-item a { color: #111; font-weight: 600; }
+
+        /* Action Controls */
+        .btn-submit {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: #111111;
+            color: #ffffff;
+            border: 2px solid #111111;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 30px;
+        }
+        .btn-submit:hover {
+            background-color: #ffffff;
+            color: #111111;
+            box-shadow: 4px 4px 0px #111111;
+            transform: translate(-2px, -2px);
+        }
+        .status-msg {
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-weight: 600;
+            text-align: center;
+            display: none;
+        }
+        .status-success { background-color: #e6f4ea; color: #137333; border: 2px solid #137333; }
+        .status-error { background-color: #fce8e6; color: #c5221f; border: 2px solid #c5221f; }
+        
+        .loading-state {
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+            padding: 40px;
+            color: #666;
+        }
+        /* Update the button to use the blue highlight */
+.btn-neo {
+    background-color: var(--accent-blue);
+    /* ... rest of your button code stays the same ... */
+}
+
+/* Update the dynamic highlight gradient line */
+.highlight {
+    background: linear-gradient(180deg, transparent 65%, var(--accent-blue) 65%);
+    display: inline-block;
+    padding: 0 4px;
+}
+
+/* Update open badges to use the brand blue tone */
+.badge-open { 
+    background: var(--brand-blue); 
+    color: #ffffff; 
+}
+    </style>
+</head>
+<body>
+
+    <main id="page" class="container" role="main">
+        <article class="sections" id="sections" data-page-sections="6a15d58005c29e5cdbd0c7b2">
+            
+            <section data-test="page-section" data-section-theme="white" class="page-section full-bleed-section layout-engine-section white" data-section-id="6a15e0533b018225f7ea55d1">
+                
+                <!-- Interface Pill Switcher -->
+                <div class="toggle-container">
+                    <button class="toggle-btn active" id="toggleSubmit" onclick="switchMode('submit')">Submit an Idea</button>
+                    <button class="toggle-btn" id="toggleBrowse" onclick="switchMode('browse')">Browse Directory</button>
+                </div>
+
+                <!-- PANEL 1: Form Sheet Submissions Layout -->
+                <div id="submitPanel" class="view-panel active">
+                    <div class="form-card">
+                        <div class="section-header">
+                            <h2>Join the Directory</h2>
+                            <p>Submit your project idea and find potential summer collaborators.</p>
+                        </div>
+                        
+                        <form id="sheetSubmissionForm">
+                            <div class="form-group">
+                                <label for="name">Name</label>
+                                <input type="text" id="name" class="form-control" placeholder="Jane Doe" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="contact">Contact Information</label>
+                                <input type="text" id="contact" class="form-control" placeholder="Email or Phone Number" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="projectIdea">Project Idea</label>
+                                <textarea id="projectIdea" class="form-control" placeholder="Describe what you want to map out or execute..." required></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Open to Collaboration? (Y/N)</label>
+                                <div class="radio-group">
+                                    <label class="radio-label"><input type="radio" name="collaboration" value="Y" checked> Yes, looking for a team</label>
+                                    <label class="radio-label"><input type="radio" name="collaboration" value="N"> No, working solo</label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="linkedin">LinkedIn Profiles</label>
+                                <input type="url" id="linkedin" class="form-control" placeholder="https://linkedin.com/in/username">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="needs">Project/mentor needs</label>
+                                <textarea id="needs" class="form-control" placeholder="What resources, tech stacks, or mentor expertise do you need help with?"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="discord">Discord Name</label>
+                                <input type="text" id="discord" class="form-control" placeholder="username" required>
+                            </div>
+
+                            <button type="submit" id="submitBtn" class="btn-submit">Submit Details</button>
+                            <div id="statusMessage" class="status-msg"></div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- PANEL 2: Dynamic Filterable Search Directory Card Feed -->
+                <div id="browsePanel" class="view-panel">
+                    <div class="search-wrapper">
+                        <input type="text" id="directorySearch" class="search-control" placeholder="🔍 Search ideas, keywords, software tools, or creators...">
+                    </div>
+                    
+                    <div id="directoryLoading" class="loading-state">Syncing live registry database...</div>
+                    <div id="directoryEntries" class="directory-grid"></div>
+                </div>
+
+            </section>
+
+        </article>
+    </main>
+
+    <script>
+        // Global State Tracking Variables
+let currentPage = 1;
+let currentSearch = "";
+let isFetching = false;
+let searchDebounceTimer;
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbw-TrX8QX63QAuxisKyvQPzaDlahIupbRebKt-j-M2B2e7lt0xBwpOBS9sfpw_Asq8c/exec';
+
+function switchMode(targetMode) {
+    const submitBtnElement = document.getElementById('toggleSubmit');
+    const browseBtnElement = document.getElementById('toggleBrowse');
+    const submitPanel = document.getElementById('submitPanel');
+    const browsePanel = document.getElementById('browsePanel');
+
+    if (targetMode === 'submit') {
+        submitBtnElement.classList.add('active');
+        browseBtnElement.classList.remove('active');
+        submitPanel.classList.add('active');
+        browsePanel.classList.remove('active');
+    } else {
+        browseBtnElement.classList.add('active');
+        submitBtnElement.classList.remove('active');
+        browsePanel.classList.add('active');
+        submitPanel.classList.remove('active');
+        
+        // Reset and trigger fresh optimized fetch
+        currentPage = 1;
+        document.getElementById('directoryEntries').innerHTML = "";
+        fetchDirectoryEntries();
+    }
+}
+
+// Optimized Async Server-Side Pull Engine
+async function fetchDirectoryEntries(append = false) {
+    if (isFetching) return;
+    isFetching = true;
+    
+    const loader = document.getElementById('directoryLoading');
+    const container = document.getElementById('directoryEntries');
+    loader.style.display = 'block';
+
+    try {
+        // Construct optimized query parameters mapping
+        const url = `${WEB_APP_URL}?page=${currentPage}&limit=20&q=${encodeURIComponent(currentSearch)}`;
+        const response = await fetch(url);
+        const payload = await response.json();
+        
+        if (payload.result === 'success') {
+            renderDirectory(payload.data, append);
+            manageLoadMoreButton(payload.hasMore);
+        } else {
+            container.innerHTML = `<div class="loading-state" style="color:#c5221f;">Could not sync directory rows.</div>`;
+        }
+    } catch (error) {
+        container.innerHTML = `<div class="loading-state" style="color:#c5221f;">Network sync layer down.</div>`;
+        console.error(error);
+    } finally {
+        loader.style.display = 'none';
+        isFetching = false;
+    }
+}
+
+// Render DOM Fragment Engine
+function renderDirectory(records, append) {
+    const container = document.getElementById('directoryEntries');
+    
+    if (records.length === 0 && !append) {
+        container.innerHTML = `<div class="loading-state">No matching projects found. Be the first to launch one!</div>`;
+        return;
+    }
+
+    const htmlContent = records.map(item => {
+        const isOpen = item.collaboration === 'Y';
+        const badgeClass = isOpen ? 'badge-open' : 'badge-solo';
+        const badgeText = isOpen ? '🤝 Open for Collaborators' : '🔒 Solo Project';
+        
+        return `
+            <div class="idea-card">
+                <span class="badge ${badgeClass}">${badgeText}</span>
+                <h3 class="idea-title">${escapeHTML(item.projectIdea.split('\n')[0].substring(0, 80))}...</h3>
+                <div class="idea-author">By <strong>${escapeHTML(item.name)}</strong> — Contact: ${escapeHTML(item.contact)}</div>
+                <p class="idea-body">${escapeHTML(item.projectIdea)}</p>
+                ${item.needs ? `<p class="idea-body"><strong>Needs:</strong> ${escapeHTML(item.needs)}</p>` : ''}
+                <div class="meta-details">
+                    <div class="meta-item">🎮 <strong>Discord:</strong> ${escapeHTML(item.discord)}</div>
+                    ${item.linkedin ? `<div class="meta-item">🔗 <a href="${escapeHTML(item.linkedin)}" target="_blank">LinkedIn Profile</a></div>` : ''}
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    if (append) {
+        container.insertAdjacentHTML('beforeend', htmlContent);
+    } else {
+        container.innerHTML = htmlContent;
+    }
+}
+
+// Manage Load More Component Context
+function manageLoadMoreButton(hasMore) {
+    let loadMoreBtn = document.getElementById('loadMoreBtn');
+    
+    if (!loadMoreBtn) {
+        const btnHtml = `<button id="loadMoreBtn" class="btn-submit" style="margin-top:20px; background:#fff; color:#111;">Load More Entries ↓</button>`;
+        document.getElementById('browsePanel').insertAdjacentHTML('beforeend', btnHtml);
+        loadMoreBtn = document.getElementById('loadMoreBtn');
+        loadMoreBtn.addEventListener('click', () => {
+            currentPage++;
+            fetchDirectoryEntries(true);
+        });
+    }
+    
+    loadMoreBtn.style.display = hasMore ? 'block' : 'none';
+}
+
+// Debounced Search Listener Optimization
+document.getElementById('directorySearch').addEventListener('input', (e) => {
+    clearTimeout(searchDebounceTimer);
+    
+    // Wait 300ms after user stops typing to fire network request
+    searchDebounceTimer = setTimeout(() => {
+        currentSearch = e.target.value.toLowerCase().trim();
+        currentPage = 1; // Reset to page 1 for new search parameters
+        fetchDirectoryEntries(false);
+    }, 300);
+});
+
+// XSS Sanitizer Helper
+function escapeHTML(str) {
+    if(!str) return '';
+    return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+}
+    </script>
+</body>
+</html>
